@@ -33,6 +33,7 @@ def random_index_gen():
 def random_placement():
     random_index = random.choice(random_index_list)
     tab[random_index[0]][random_index[1]] = 2
+    random_index_list.remove(random_index)
 
 def move_horizontal(a,b):
 
@@ -77,38 +78,72 @@ def move_vertical_after_addition(up,down):
 
 
 def add_left():
+    global counter_add
+    counter_add = 0
     for x in range(4):
         for y in range(3):
             if tab[x][y] == tab[x][y+1]:
                 tab[x][y+1] *= 2
                 tab[x][y] = 0
+                counter_add += 1
 
 def add_right():
+    global counter_add
+    counter_add = 0
     for x in range(4):
         for y in reversed(range(3)):
             if tab[x][y] == tab[x][y+1]:
                 tab[x][y+1] *= 2
                 tab[x][y] = 0
+                counter_add += 1
 
 def add_up():
+    global counter_add
+    counter_add = 0
     for y in range(4):
         for x in range(3):
             if tab[x+1][y] == tab[x][y]:
                 tab[x][y] *= 2
                 tab[x+1][y] = 0
+                counter_add += 1
 
 def add_down():
+    global counter_add
+    counter_add = 0
     for y in range(4):
         for x in reversed(range(3)):
             if tab[x+1][y] == tab[x][y]:
                 tab[x][y] *= 2
                 tab[x+1][y] = 0
-                
+                counter_add += 1
 
+def game_over_check():
+    if len(random_index_list) == 0:
+        for x in range(4):
+            for y in range(3):
+                if tab[x][y] == tab[x][y+1]:
+                    return False
+
+        for x in range(3):
+            for y in range(4):
+                if tab[x][y] == tab[x+1][y]:
+                    return False
+        return True
+    return False     
+        
 def game_over():
-    if fin == 0 and counter == 0:
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print ("GAME OVER")
+
+    os.system('cls' if os.name == 'nt' else 'clear')
+    columns = shutil.get_terminal_size().columns
+    print("\033[1;32;45m \n"*5)
+    print("\033[1;32;45m GAME OVER".center(columns))
+    print("\033[1;32;45m \n"*5)
+    print("\033[1;32;45m 1. Start Menü".center(columns))
+    userinput = input("Press '1' or any button to exit!")
+    if userinput == "1":
+        start_menu()
+    else:
+        exit()    
 
 def start_menu():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -141,17 +176,22 @@ def main():
             add_left()
             move_horizontal_after_addition(0,1)
             random_index_gen()
-            if counter != 0:
+            if counter != 0 or counter_add != 0:
                 random_placement()
-        
+            if game_over_check() == True:
+                game_over()
+                        
+                 
         
         elif move == "d":
             move_horizontal(1,0)
             add_right()
             move_horizontal_after_addition(1,0)
             random_index_gen()
-            if counter != 0:
+            if counter != 0 or counter_add != 0:
                 random_placement()
+            if game_over_check() == True:
+                game_over()
     
 
         elif move == "w":
@@ -159,8 +199,11 @@ def main():
             add_up()
             move_vertical_after_addition(0,1)
             random_index_gen()
-            if counter != 0:
+            if counter != 0 or counter_add != 0:
                 random_placement()
+            game_over_check()
+            if game_over_check() == True:
+                game_over()
     
 
         elif move == "s":
@@ -168,9 +211,11 @@ def main():
             add_down()
             move_vertical_after_addition(1,0)
             random_index_gen()
-            if counter != 0:
+            if counter != 0 or counter_add != 0:
                 random_placement()
-    
+            game_over_check()
+            if game_over_check() == True:
+                game_over()
         
         elif move == "x":
             exit()
